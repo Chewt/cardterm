@@ -33,6 +33,7 @@ typedef struct
 {
     enum suits suit;
     enum ranks rank;
+    int flipped;
 } Card;
 
 typedef struct

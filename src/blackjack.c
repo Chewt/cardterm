@@ -101,6 +101,7 @@ float blackjack(float money)
         dealer_hand[d_hand_size++] = deal_card(&deck);
         hand[0][hand_size[0]++] = deal_card(&deck);
         dealer_hand[d_hand_size++] = deal_card(&deck);
+        dealer_hand[1].flipped = 1; // Dealer's second card is flipped over
 
         // SPLIT HAND TESTING
         //hand[0][0] = (Card){SPADES, ACE};
@@ -160,8 +161,8 @@ float blackjack(float money)
             while (1)
             {
                 CLEAR_SCREEN();
-                printf("The dealer has a\n");
-                print_hand(dealer_hand, 1); // Only show first card
+                printf("Dealer Hand:\n");
+                print_hand(dealer_hand, d_hand_size); 
 
                 printf("\n\nYour"); 
                 if (num_hands == 2)
@@ -198,6 +199,7 @@ float blackjack(float money)
 
         // Dealer's turn
         printf("\n\nDealer hand is:\n");
+        dealer_hand[1].flipped = 0;
         print_hand(dealer_hand, d_hand_size);
         while (dealer_score < 17)
         {

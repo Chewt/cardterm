@@ -87,6 +87,15 @@ void print_card_text(Card card)
 
 void print_card(Card card)
 {
+    if (card.flipped)
+    {
+        printf("╔═════╗\e[B\e[7D"
+               "║ ╝ ╚ ║\e[B\e[7D"
+               "║ ═║═ ║\e[B\e[7D"
+               "║ ╗ ╔ ║\e[B\e[7D"
+               "╚═════╝\e[4A");
+        return;
+    }
     char rank = ' ';
     char* suit;
     switch (card.rank)
@@ -160,6 +169,7 @@ Deck new_deck()
         {
             deck.cards[k].suit = i;
             deck.cards[k].rank = j;
+            deck.cards[k].flipped = 0;
             k++;
         }
     }
