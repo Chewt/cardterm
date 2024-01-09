@@ -24,7 +24,7 @@ int main()
 
     // Seed rand()
     srand(time(NULL));
-    printf("\e[2J\e[H\n");
+    CLEAR_SCREEN();
 
     float money = 2000.0;
 

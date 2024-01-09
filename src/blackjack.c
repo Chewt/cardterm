@@ -5,8 +5,11 @@
 #include <string.h>
 #include <unistd.h>
 
-void clean_resp(char* s)
+void get_player_input(char* s)
 {
+    if (s[0] == 0)
+        fgets(s, 255, stdin);
+    s[255] = '\n';
     int i;
     while (s[i] != '\n')
     {
@@ -14,6 +17,15 @@ void clean_resp(char* s)
         i++;
     }
     s[i] = 0;
+}
+
+float get_player_bet(char* s)
+{
+    float bet = 0.f;
+    if (s[0] == 0)
+        fgets(s, 255, stdin);
+    bet = strtof(s, NULL);
+    return bet;
 }
 
 
@@ -66,27 +78,32 @@ float blackjack(float money)
             printf("You have $%.2f\n", money);
             printf("How much would you like to bet, "
                     "between $2 and $500? ");
-            fgets(resp, 255, stdin);
-            resp[255] = 0;
-            if (!strcmp(resp, "leave\n"))
+            resp[0] = 0;
+            get_player_input(resp);
+            if (!strcmp(resp, "leave"))
                 return money;
-            bet = atof(resp);
+            bet = get_player_bet(resp);
             if (bet < 2.f || bet > 500.f)
                 printf("Invalid bet!\n");
         } while (bet < 2.f || bet > 500.f);
 
 
+        // Deal the cards out
         Card hand[2][10];
         Card dealer_hand[10];
         int num_hands = 1;
         int hand_size[2] = {0};
         int d_hand_size = 0;
 
-        // Deal the cards out
+
         hand[0][hand_size[0]++] = deal_card(&deck);
         dealer_hand[d_hand_size++] = deal_card(&deck);
         hand[0][hand_size[0]++] = deal_card(&deck);
         dealer_hand[d_hand_size++] = deal_card(&deck);
+
+        // SPLIT HAND TESTING
+        hand[0][0] = (Card){SPADES, ACE};
+        hand[0][1] = (Card){CLUBS, ACE};
 
         int player_score = score_hand(hand[0], hand_size[0]);
         int dealer_score = score_hand(dealer_hand, d_hand_size);
@@ -94,50 +111,37 @@ float blackjack(float money)
         // Check for natural scores of 21
         if (player_score == 21 && dealer_score == 21)
         {
+            printf("Dealer Hand:\n");
+            print_hand(dealer_hand, d_hand_size);
+            printf("Player Hand:\n");
+            print_hand(hand[0], hand_size[0]);
             printf("Dealer and Player Naturals! Push!\n");
             continue;
         }
         else if (player_score == 21)
         {
-            int i;
-            for (i = 0; i < hand_size[0] - 1; ++i)
-            {
-                print_card_pretty(hand[0][i]);
-            }
-            print_card_pretty(hand[0][i]);
-            printf("\e[5B\r");
+            print_hand(hand[0], hand_size[0]);
             printf("Player Natural! You win $%.2f!\n", 1.5f * bet);
             money += 1.5f * bet;
             continue;
         }
         else if (dealer_score == 21)
         {
-            int i;
-            for (i = 0; i < hand_size[0] - 1; ++i)
-            {
-                print_card_pretty(dealer_hand[i]);
-            }
-            print_card_pretty(dealer_hand[i]);
-            printf("\e[5B\r");
+            print_hand(dealer_hand, d_hand_size);
             printf("Dealer Natural! You lose\n");
             money += -bet;
             continue;
         }
 
+        // Check for a possible split hand
         if (hand[0][0].rank == hand[0][1].rank)
         {
+            CLEAR_SCREEN();
             printf("\n\nYour hand is:\n");
-            int i;
-            for (i = 0; i < hand_size[0] - 1; ++i)
-            {
-                print_card_pretty(hand[0][i]);
-            }
-            print_card_pretty(hand[0][i]);
-            printf("\e[5B\r");
+            print_hand(hand[0], hand_size[0]);
             printf("\nWould you like to split? (yes/no) ");
-            fgets(resp, 255, stdin);
-            resp[255] = 0;
-            clean_resp(resp);
+            resp[0] = 0;
+            get_player_input(resp);
             if (!strcmp(resp, "yes"))
             {
                 num_hands = 2;
@@ -149,87 +153,82 @@ float blackjack(float money)
         }
 
         // Let the player choose to hit or stand
-        int j;
-        for (j = 0; j < num_hands; ++j)
+        int i;
+        for (i = 0; i < num_hands; ++i)
         {
             while (1)
             {
-                printf("\e[2J\e[H\n");
+                CLEAR_SCREEN();
                 printf("The dealer has a\n");
-                print_card_pretty(dealer_hand[0]);
-                printf("\e[5B\r");
-                printf("\n\nYour hand is:\n");
-                int i;
-                for (i = 0; i < hand_size[j] - 1; ++i)
-                {
-                    print_card_pretty(hand[j][i]);
-                }
-                print_card_pretty(hand[j][i]);
-                printf("\e[5B\r");
-                if (score_hand(hand[j], hand_size[j]) > 21)
+                print_hand(dealer_hand, 1); // Only show first card
+
+                printf("\n\nYour"); 
+                if (num_hands == 2)
+                    printf(" %s", (i == 0) ? "first" : "second");
+                printf(" hand is:\n");
+                print_hand(hand[i], hand_size[i]);
+
+                if (score_hand(hand[i], hand_size[i]) > 21)
                 {
                     printf("\nBust. You lose\n");
                     money += -bet;
-                    bust = 1;
+                    bust++;
                     break;
                 }
+
                 printf("\nStand or Hit? ");
-                fgets(resp, 255, stdin);
-                resp[255] = 0;
-                clean_resp(resp);
+                resp[0] = 0;
+                get_player_input(resp);
                 if (!strcmp(resp, "hit"))
                 {
-                    hand[j][(hand_size[j])++] = deal_card(&deck);
+                    hand[i][(hand_size[i])++] = deal_card(&deck);
                 }
                 else
                     break;
             }
+            if (i == 0 && num_hands == 2)
+                sleep(2);
         }
 
-        if (bust)
+        if (bust == num_hands)
             continue;
 
         // Dealer's turn
         printf("\n\nDealer hand is:\n");
-        int i;
-        for (i = 0; i < d_hand_size - 1; ++i)
-        {
-            print_card_pretty(dealer_hand[i]);
-        }
-        print_card_pretty(dealer_hand[i]);
-        printf("\e[5B\r");
-        fflush(stdout);
+        print_hand(dealer_hand, d_hand_size);
         while (dealer_score < 17)
         {
             sleep(2);
-            printf("\e[5A");
+            printf("\e[5A"); // Draw over old hand
             dealer_hand[d_hand_size++] = deal_card(&deck);
             dealer_score = score_hand(dealer_hand, d_hand_size);
-            int i;
-            for (i = 0; i < d_hand_size; ++i)
-            {
-                print_card_pretty(dealer_hand[i]);
-            }
-            printf("\e[5B\r");
-            fflush(stdout);
+            print_hand(dealer_hand, d_hand_size);
         } 
         dealer_score = score_hand(dealer_hand, d_hand_size);
 
         // Determine winner
-        for (j = 0; j < num_hands; ++j)
+        for (i = 0; i < num_hands; ++i)
         {
-            player_score = score_hand(hand[j], hand_size[j]);
+            player_score = score_hand(hand[i], hand_size[i]);
 
-            printf("Your score is %d\n", player_score);
+            printf("Your");
+            if (num_hands == 2)
+                printf(" %s", (i == 0) ? "first" : "second");
+            printf(" score is %d\n", player_score);
             printf("Dealer's score is %d\n", dealer_score);
-            if (dealer_score > 21)
+            if (player_score > 21)
             {
-                printf("Dealer bust. You win\n");
+                printf("Bust! You lose $%.2f!\n", bet);
+                money -= bet;
+            }
+            else if (dealer_score > 21)
+            {
+                printf("Dealer bust. You win $%.2f!\n", bet);
                 money += bet;
             }
             else if (player_score > dealer_score)
             {
-                printf("You win!\n");
+                printf("You win $%.2f!\n", bet);
                 money += bet;
             }
             else if (player_score == dealer_score)
@@ -238,7 +237,7 @@ float blackjack(float money)
             }
             else
             {
-                printf("You Lose!\n");
+                printf("You Lose $%.2f!\n", bet);
                 money += -bet;
             }
         }

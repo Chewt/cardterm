@@ -80,12 +80,12 @@ void swap_cards(Card* a, Card* b)
     *b = temp;
 }
 
-void print_card(Card card)
+void print_card_text(Card card)
 {
     printf("%s of %s", rank_name(card.rank), suit_name(card.suit));
 }
 
-void print_card_pretty(Card card)
+void print_card(Card card)
 {
     char rank[3] = "  ";
     char* suit;
@@ -133,6 +133,18 @@ void print_card_pretty(Card card)
            "║ %s ║\e[B\e[7D"
            "║   %2s║\e[B\e[7D"
            "╚═════╝\e[4A", rank, suit, rank);
+}
+
+void print_hand(Card* hand, int num_cards)
+{
+    int i;
+    for (i = 0; i < num_cards - 1; ++i)
+    {
+        print_card(hand[i]);
+    }
+    print_card(hand[i]);
+    printf("\e[5B\r");
+    fflush(stdout);
 }
 
 Deck new_deck()
