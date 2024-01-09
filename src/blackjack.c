@@ -86,6 +86,7 @@ float blackjack(float money)
             if (bet < 2.f || bet > 500.f)
                 printf("Invalid bet!\n");
         } while (bet < 2.f || bet > 500.f);
+        CLEAR_SCREEN();
 
 
         // Deal the cards out
@@ -102,8 +103,8 @@ float blackjack(float money)
         dealer_hand[d_hand_size++] = deal_card(&deck);
 
         // SPLIT HAND TESTING
-        hand[0][0] = (Card){SPADES, ACE};
-        hand[0][1] = (Card){CLUBS, ACE};
+        //hand[0][0] = (Card){SPADES, ACE};
+        //hand[0][1] = (Card){CLUBS, ACE};
 
         int player_score = score_hand(hand[0], hand_size[0]);
         int dealer_score = score_hand(dealer_hand, d_hand_size);
@@ -171,7 +172,6 @@ float blackjack(float money)
                 if (score_hand(hand[i], hand_size[i]) > 21)
                 {
                     printf("\nBust. You lose\n");
-                    money += -bet;
                     bust++;
                     break;
                 }
@@ -191,7 +191,10 @@ float blackjack(float money)
         }
 
         if (bust == num_hands)
+        {
+            money -= bet * num_hands;
             continue;
+        }
 
         // Dealer's turn
         printf("\n\nDealer hand is:\n");
