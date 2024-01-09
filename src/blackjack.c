@@ -129,7 +129,7 @@ float blackjack(float money)
         else if (dealer_score == 21)
         {
             print_hand(dealer_hand, d_hand_size);
-            printf("Dealer Natural! You lose\n");
+            printf("Dealer Natural! You lose $%.2f!\n", bet);
             money += -bet;
             continue;
         }
