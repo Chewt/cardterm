@@ -87,28 +87,24 @@ void print_card_text(Card card)
 
 void print_card(Card card)
 {
-    char rank[3] = "  ";
+    char rank = ' ';
     char* suit;
     switch (card.rank)
     {
         case ACE:
-            rank[0] = 'A';
-            break;
-        case TEN:
-            rank[0] = '1';
-            rank[1] = '0';
+            rank = 'A';
             break;
         case JACK:
-            rank[0] = 'J';
+            rank = 'J';
             break;
         case QUEEN:
-            rank[0] = 'Q';
+            rank = 'Q';
             break;
         case KING:
-            rank[0] = 'K';
+            rank = 'K';
             break;
         default:
-            rank[0] = '1' + card.rank;
+            rank = '1' + card.rank;
     }
     switch (card.suit)
     {
@@ -129,10 +125,15 @@ void print_card(Card card)
             break;
     }
     printf("╔═════╗\e[B\e[7D"
-           "║%2s   ║\e[B\e[7D"
+           "║%c%c   ║\e[B\e[7D"
            "║ %s ║\e[B\e[7D"
-           "║   %2s║\e[B\e[7D"
-           "╚═════╝\e[4A", rank, suit, rank);
+           "║   %c%c║\e[B\e[7D"
+           "╚═════╝\e[4A",
+           (card.rank == TEN) ? '1' : rank,
+           (card.rank == TEN) ? '0' : ' ',
+           suit,
+           (card.rank == TEN) ? '1' : ' ',
+           (card.rank == TEN) ? '0' : rank);
 }
 
 void print_hand(Card* hand, int num_cards)
