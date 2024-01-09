@@ -171,7 +171,7 @@ float blackjack(float money)
 
                 if (score_hand(hand[i], hand_size[i]) > 21)
                 {
-                    printf("\nBust. You lose\n");
+                    printf("\nBust.\n");
                     bust++;
                     break;
                 }
