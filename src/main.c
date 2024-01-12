@@ -1,6 +1,7 @@
 #include "blackjack.h"
 #include "crazy8.h"
 #include "io.h"
+#include "texas.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -30,7 +31,8 @@ int main(int argc, char** argv)
             printf("Which game would you like to play?\n"
                     "1. Blackjack\n"
                     "2. Crazy 8s\n"
-                    "3. Exit\n: ");
+                    "3. Texas Hold'em\n"
+                    "4. Exit\n: ");
             get_player_input(input);
         }
 
@@ -44,6 +46,9 @@ int main(int argc, char** argv)
                 money = crazy8(money);
                 break;
             case '3':
+                money = texas_holdem(money);
+                break;
+            case '4':
                 exit_program = 1;
                 break;
             default:
@@ -62,7 +67,6 @@ int main(int argc, char** argv)
         else
             input[0] = 0;
     }
-
     printf("Your winnings are $%.2f!\n", money);
 
     return 0;

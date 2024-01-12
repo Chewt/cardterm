@@ -236,6 +236,7 @@ Card deal_card(Deck* deck)
     return c;
 }
 
+<<<<<<< HEAD
 /* Show the top card in a deck. This does NOT modify the deck.
  * return: a copy of the top card
  */
@@ -258,5 +259,3 @@ void remove_card(Hand* hand, int idx)
     }
     hand->num_cards--;
 }
-
-
