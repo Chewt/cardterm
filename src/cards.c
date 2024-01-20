@@ -118,19 +118,23 @@ void print_card(Card card)
     switch (card.suit)
     {
         case SPADES:
-            suit = "SPD";
+            //suit = "SPD";
+            suit = " ♠ ";
             break;
         case HEARTS:
-            suit = "HRT";
+            //suit = "HRT";
+            suit = " \e[31;1m♥\e[0m ";
             break;
         case CLUBS:
-            suit = "CLB";
+            //suit = "CLB";
+            suit = " ♣ ";
             break;
         case DIAMONDS:
-            suit = "DMD";
+            //suit = "DMD";
+            suit = " \e[31;1m♦\e[0m ";
             break;
         default:
-            suit = "?";
+            suit = " ? ";
             break;
     }
     printf("╔═════╗\e[B\e[7D"
