@@ -39,8 +39,14 @@ typedef struct
 typedef struct
 {
     Card cards[52];
-    int numCards;
+    int num_cards;
 } Deck;
+
+typedef struct
+{
+    Card cards[52];
+    int num_cards;
+} Hand;
 
 const char* suit_name(enum suits s);
 const char* rank_name(enum ranks r);
@@ -52,4 +58,5 @@ void cascade_hand(Card* hand, int num_cards);
 Deck new_deck();
 void shuffle(Deck* deck);
 Card deal_card(Deck* deck);
+void remove_card(Hand* hand, int idx);
 #endif

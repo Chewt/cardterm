@@ -152,34 +152,38 @@ void print_card(Card card)
 
 void print_hand(Card* hand, int num_cards)
 {
+    if (num_cards == 0)
+        return;
     int i;
     for (i = 0; i < num_cards; ++i)
     {
         print_card(hand[i]);
     }
-    mov_vrt(CARD_HEIGHT);
-    mov_CR();
+    cur_Y(CARD_HEIGHT);
+    cur_CR();
     fflush(stdout);
 }
 
 void cascade_hand(Card* hand, int num_cards)
 {
+    if (num_cards == 0)
+        return;
     int i;
     for (i = 0; i < num_cards - 1; ++i)
     {
         print_card(hand[i]);
-        mov_hoz(-4);
+        cur_X(-4);
     }
     print_card(hand[i]);
-    mov_vrt(CARD_HEIGHT);
-    mov_CR();
+    cur_Y(CARD_HEIGHT);
+    cur_CR();
     fflush(stdout);
 }
 
 Deck new_deck()
 {
     Deck deck;
-    deck.numCards = 52;
+    deck.num_cards = 52;
     int i, j, k;
     k = 0;
     for (i = SPADES; i <= HEARTS; ++i)
@@ -200,10 +204,10 @@ void shuffle(Deck* deck)
     int i, j;
     for (i = 0; i < 4; ++i)
     {
-        for (j = 0; j < deck->numCards; ++j)
+        for (j = 0; j < deck->num_cards; ++j)
         {
-            int idx1 = rand() % deck->numCards;
-            int idx2 = rand() % deck->numCards;
+            int idx1 = rand() % deck->num_cards;
+            int idx2 = rand() % deck->num_cards;
             swap_cards(deck->cards + idx1, deck->cards + idx2);
         }
     }
@@ -211,7 +215,24 @@ void shuffle(Deck* deck)
 
 Card deal_card(Deck* deck)
 {
-    Card c = deck->cards[deck->numCards - 1];
-    deck->numCards--;
+    if (deck->num_cards == 0)
+        return (Card){-1,-1};
+    Card c = deck->cards[deck->num_cards - 1];
+    deck->num_cards--;
     return c;
+}
+
+void remove_card(Hand* hand, int idx)
+{
+    if (hand->num_cards == 1)
+    {
+        hand->num_cards = 0;
+        return;
+    }
+    int i;
+    for (i = idx; i < hand->num_cards - 1; ++i)
+    {
+        swap_cards(hand->cards + i, hand->cards + i + 1);
+    }
+    hand->num_cards--;
 }

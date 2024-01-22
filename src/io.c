@@ -1,7 +1,7 @@
 #include "io.h"
 #include <stdio.h>
 
-void mov_vrt(int y)
+void cur_Y(int y)
 {
     if (y < 0)      // Move Up
         printf("\e[%dA", -y);
@@ -9,7 +9,7 @@ void mov_vrt(int y)
         printf("\e[%dB", y);
 }
 
-void mov_hoz(int x)
+void cur_X(int x)
 {
     if (x > 0)      // Move Right
         printf("\e[%dC", x);
@@ -17,19 +17,28 @@ void mov_hoz(int x)
         printf("\e[%dD", -x);
 }
 
-void mov_cur(int x, int y)
+void cur_MOV(int x, int y)
 {
-    mov_vrt(y);
-    mov_hoz(x);
+    cur_Y(y);
+    cur_X(x);
 }
 
-void mov_CR()
+void cur_CR()
 {
     printf("\r");
 }
 
-void mov_HOME()
+void cur_HOME()
 {
     printf("\e[H");
 }
 
+void cur_SAV()
+{
+    printf("\e[s");
+}
+
+void cur_RES()
+{
+    printf("\e[u");
+}

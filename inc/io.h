@@ -8,10 +8,12 @@
 // Clear screen macro
 #define CLEAR_SCREEN() printf("\e[2J\e[H\n"); 
 
-void mov_vrt(int y);
-void mov_hoz(int x);
-void mov_cur(int x, int y);
-void mov_CR();
-void mov_HOME();
+void cur_Y(int y);
+void cur_X(int x);
+void cur_MOV(int x, int y);
+void cur_CR();
+void cur_HOME();
+void cur_SAV();
+void cur_RES();
 
 #endif
