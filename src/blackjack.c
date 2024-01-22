@@ -1,4 +1,5 @@
 #include "cards.h"
+#include "io.h"
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -129,6 +130,7 @@ float blackjack(float money)
         }
         else if (dealer_score == 21)
         {
+            dealer_hand[1].flipped = 0;
             print_hand(dealer_hand, d_hand_size);
             printf("Dealer Natural! You lose $%.2f!\n", bet);
             money += -bet;

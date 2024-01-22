@@ -1,34 +1,29 @@
 #include "blackjack.h"
 #include "cards.h"
+#include "crazy8.h"
+#include "io.h"
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 
-int main()
+int main(int argc, char** argv)
 {
-    /*
-    Deck deck = new_deck();
-    shuffle(&deck);
-    printf("\e[2J\e[H\n");
-    int i;
-    for (i = 0; i < 5; ++i)
-    {
-        print_card_pretty(deck.cards[i]);
-    }
-    printf("\e[5B\r");
-    return 0;
-    */
-    /* MAIN PROGRAM */
+    float money = 2000.0;
 
-    // Seed rand()
+    // Allow user to specify starting money
+    if (argc == 2)
+        money = strtol(argv[1], NULL, 10);
+
+    // Default to 2000
+    money = (money) ? money : 2000;
+
     srand(time(NULL));
     CLEAR_SCREEN();
 
-    float money = 2000.0;
-
-    money = blackjack(money);
+    //money = blackjack(money);
+    money = crazy8(money);
 
     printf("Your winnings are $%.2f!\n", money);
 

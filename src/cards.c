@@ -1,4 +1,5 @@
 #include "cards.h"
+#include "io.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -119,32 +120,32 @@ void print_card(Card card)
     {
         case SPADES:
             //suit = "SPD";
-            suit = " ♠ ";
+            suit = "♠";
             break;
         case HEARTS:
             //suit = "HRT";
-            suit = " \e[31;1m♥\e[0m ";
+            suit = STR_RED"♥"STR_NML;
             break;
         case CLUBS:
             //suit = "CLB";
-            suit = " ♣ ";
+            suit = "♣";
             break;
         case DIAMONDS:
             //suit = "DMD";
-            suit = " \e[31;1m♦\e[0m ";
+            suit = STR_RED"♦"STR_NML;
             break;
         default:
-            suit = " ? ";
+            suit = "?";
             break;
     }
-    printf("╔═════╗\e[B\e[7D"
-           "║%c%c   ║\e[B\e[7D"
-           "║ %s ║\e[B\e[7D"
-           "║   %c%c║\e[B\e[7D"
+    printf("╔═════╗\e[7D\e[B"
+           "║%c%c   ║\e[7D\e[B"
+           "║%s   %s║\e[7D\e[B"
+           "║   %c%c║\e[7D\e[B"
            "╚═════╝\e[4A",
            (card.rank == TEN) ? '1' : rank,
            (card.rank == TEN) ? '0' : ' ',
-           suit,
+           suit,suit,
            (card.rank == TEN) ? '1' : ' ',
            (card.rank == TEN) ? '0' : rank);
 }
@@ -152,12 +153,26 @@ void print_card(Card card)
 void print_hand(Card* hand, int num_cards)
 {
     int i;
-    for (i = 0; i < num_cards - 1; ++i)
+    for (i = 0; i < num_cards; ++i)
     {
         print_card(hand[i]);
     }
+    mov_vrt(CARD_HEIGHT);
+    mov_CR();
+    fflush(stdout);
+}
+
+void cascade_hand(Card* hand, int num_cards)
+{
+    int i;
+    for (i = 0; i < num_cards - 1; ++i)
+    {
+        print_card(hand[i]);
+        mov_hoz(-4);
+    }
     print_card(hand[i]);
-    printf("\e[5B\r");
+    mov_vrt(CARD_HEIGHT);
+    mov_CR();
     fflush(stdout);
 }
 
