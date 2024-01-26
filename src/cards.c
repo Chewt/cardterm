@@ -222,6 +222,14 @@ Card deal_card(Deck* deck)
     return c;
 }
 
+/* Show the top card in a deck. This does NOT modify the deck.
+ * return: a copy of the top card
+ */
+Card peek_top(Deck* deck)
+{
+    return deck->cards[deck->num_cards - 1];
+}
+
 void remove_card(Hand* hand, int idx)
 {
     if (hand->num_cards == 1)

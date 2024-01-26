@@ -25,6 +25,9 @@ int msleep(long msec)
     return res;
 }
 
+/* Flip a card over from the deck to the pile, and draw the new card to the
+ * screen.
+ */
 void turn_over_card(Deck* deck, Deck* pile)
 {
     pile->cards[pile->num_cards++] = deal_card(deck);
@@ -53,6 +56,9 @@ void print_table(Deck* deck, Deck* pile, Hand* players, const int num_players)
     fflush(stdout);
 }
 
+/* Checks if any 8s in hand, which are wild cards.
+ * return: index of first match, or -1 if no match
+ */
 int check_for_eights(Hand* hand)
 {
     int i;
@@ -62,6 +68,9 @@ int check_for_eights(Hand* hand)
     return -1;
 }
 
+/* Takes all cards, except for last card in pile, and moves them to deck. Then
+ * deck is shuffled. 
+ */
 void reshuffle(Deck* deck, Deck* pile)
 {
     int i;
@@ -73,6 +82,30 @@ void reshuffle(Deck* deck, Deck* pile)
     pile->num_cards = 1;
     // shuffle the deck after moving the cards
     shuffle(deck);
+}
+
+/* Checks if Card c exists in hand.
+ * return: The index of first match, -1 if no match
+ */
+int check_for_match(Hand* hand, Card c)
+{
+    int card_played = -1;
+    int j;
+    for (j = 0; j < hand->num_cards; j++)
+    {
+        if ((hand->cards[j].suit == c.suit) || (hand->cards[j].rank == c.rank))
+        {
+            card_played = j;
+            break;
+        }
+    }
+    int eight = check_for_eights(hand);
+    if ((card_played < 0) && (eight >= 0))
+    {
+        card_played = eight;
+
+    }
+    return card_played;
 }
 
 float crazy8(float money)
@@ -91,14 +124,14 @@ float crazy8(float money)
     for (i = 0; i < NUM_PLAYERS; ++i)
         players[i].num_cards = 0;
 
-    // Deal cards
+    // Deal initial cards
     for (i = 0; i < 5; ++i)
     {
         for (j = 0; j < NUM_PLAYERS; ++j)
         {
             players[j].cards[players[j].num_cards++] = deal_card(&deck);
             if (j != 0)
-                players[j].cards[i].flipped = 0; // TODO change to 1 after testing
+                players[j].cards[i].flipped = 1; 
         }
     }
 
@@ -108,14 +141,13 @@ float crazy8(float money)
     cur_X(SCREEN_EDGE - CARD_WIDTH);
     print_card((Card){SPADES, ACE, 1});
 
-    // Show player their cards, waiting half a second in between to 
+    // Show player their cards, waiting a bit in between to 
     // simulate being dealt the cards
     for (i = 0; i < 5; ++i)
     {
         cur_HOME();
         for (j = NUM_PLAYERS - 1; j >= 0; --j)
         {
-            //print_hand(players[j].hand, i + 1);
             cascade_hand(players[j].cards, i + 1);
             msleep(300);
         }
@@ -129,51 +161,24 @@ float crazy8(float money)
     {
         for (i = 0; i < NUM_PLAYERS; ++i)
         {
-            if (0) //TODO set back to i == 0
+            if (i == 0) // Player's Turn 
             {
-                // Player turn
                 continue;
             }
-            else
+            else // Computer's turn
             {
-                // Computer turn
-
                 // Check if any cards match
-                int card_played = 0;
-                for (j = 0; j < players[i].num_cards; j++)
+                int card_played = check_for_match(players + i, peek_top(&pile));
+                if (card_played >= 0) // Match found
                 {
-                    if (players[i].cards[j].suit ==
-                            pile.cards[pile.num_cards - 1].suit)
-                    {
-                        pile.cards[pile.num_cards++] = players[i].cards[j];
-                        pile.cards[pile.num_cards - 1].flipped = 0;
-                        remove_card(players + i, j);
-                        card_played = 1;
-                        break;
-                    }
-                    else if (players[i].cards[j].rank ==
-                            pile.cards[pile.num_cards - 1].rank)
-                    {
-                        pile.cards[pile.num_cards++] = players[i].cards[j];
-                        pile.cards[pile.num_cards - 1].flipped = 0;
-                        remove_card(players + i, j);
-                        card_played = 1;
-                        break;
-                    }
+                  pile.cards[pile.num_cards++] = players[i].cards[card_played];
+                  pile.cards[pile.num_cards - 1].flipped = 0;
+                  remove_card(players + i, card_played);
                 }
-                int eight = check_for_eights(players + i);
-                if (!card_played && (eight >= 0))
-                {
-                    pile.cards[pile.num_cards++] = players[i].cards[eight];
-                    pile.cards[pile.num_cards - 1].flipped = 0;
-                    remove_card(players + i, eight);
-                    card_played = 1;
-
-                }
-                if (!card_played)
+                else if (card_played < 0) // No match, draw card
                 {
                     players[i].cards[players[i].num_cards++] = deal_card(&deck);
-                    //players[i].cards[players[i].num_cards - 1].flipped = 1;
+                    players[i].cards[players[i].num_cards - 1].flipped = 1;
                     if (deck.num_cards == 0)
                         reshuffle(&deck, &pile);
                     i--;
