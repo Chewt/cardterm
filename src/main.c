@@ -1,8 +1,6 @@
 #include "blackjack.h"
-#include "cards.h"
 #include "crazy8.h"
 #include "io.h"
-#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -10,7 +8,7 @@
 
 int main(int argc, char** argv)
 {
-    float money = 2000.0;
+    float money;
 
     // Allow user to specify starting money
     if (argc == 2)

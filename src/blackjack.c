@@ -1,24 +1,9 @@
 #include "cards.h"
 #include "io.h"
-#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-
-void get_player_input(char* s)
-{
-    if (s[0] == 0)
-        fgets(s, 255, stdin);
-    s[255] = '\n';
-    int i;
-    while (s[i] != '\n')
-    {
-        s[i] = tolower(s[i]);
-        i++;
-    }
-    s[i] = 0;
-}
 
 float get_player_bet(char* s)
 {
@@ -28,7 +13,6 @@ float get_player_bet(char* s)
     bet = strtof(s, NULL);
     return bet;
 }
-
 
 int score_hand(Card* hand, int hand_size)
 {

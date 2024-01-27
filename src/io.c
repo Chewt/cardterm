@@ -1,5 +1,20 @@
 #include "io.h"
+#include <ctype.h>
 #include <stdio.h>
+
+void get_player_input(char* s)
+{
+    if (s[0] == 0)
+        fgets(s, 255, stdin);
+    s[255] = '\n';
+    int i;
+    while (s[i] != '\n')
+    {
+        s[i] = tolower(s[i]);
+        i++;
+    }
+    s[i] = 0;
+}
 
 void cur_Y(int y)
 {

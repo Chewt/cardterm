@@ -81,6 +81,17 @@ void swap_cards(Card* a, Card* b)
     *b = temp;
 }
 
+int is_in_hand(Hand* hand , Card c)
+{
+    int i;
+    for (i = 0; i < hand->num_cards; ++i)
+    {
+        if ((hand->cards[i].rank == c.rank) && (hand->cards[i].suit == c.suit))
+            return i;
+    }
+    return -1;
+}
+
 void print_card_text(Card card)
 {
     printf("%s of %s", rank_name(card.rank), suit_name(card.suit));
@@ -244,3 +255,5 @@ void remove_card(Hand* hand, int idx)
     }
     hand->num_cards--;
 }
+
+

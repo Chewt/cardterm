@@ -2,9 +2,108 @@
 #include "cards.h"
 #include "io.h"
 #include <stdio.h>
+#include <string.h>
 #include <time.h>
 
 #define SCREEN_EDGE 79
+
+// Return a card if user input follows scheme: "ranksuit". 
+// ex: "10S" for Ten of Spades
+Card get_input_card()
+{
+    char input[256];
+    input[0] = 0;
+    get_player_input(input);
+    int input_len = strlen(input);
+
+    Card c = {-1, -1, 0};
+    if (input_len == 2)
+    {
+        switch (input[0])
+        {
+            case 'a':
+                c.rank = ACE;
+                break;
+            case '2':
+                c.rank = TWO;
+                break;
+            case '3':
+                c.rank = THREE;
+                break;
+            case '4':
+                c.rank = FOUR;
+                break;
+            case '5':
+                c.rank = FIVE;
+                break;
+            case '6':
+                c.rank = SIX;
+                break;
+            case '7':
+                c.rank = SEVEN;
+                break;
+            case '8':
+                c.rank = EIGHT;
+                break;
+            case '9':
+                c.rank = NINE;
+                break;
+            case 'j':
+                c.rank = JACK;
+                break;
+            case 'q':
+                c.rank = QUEEN;
+                break;
+            case 'k':
+                c.rank = KING;
+                break;
+            default:
+                c.rank = -1;
+        }
+        switch(input[1])
+        {
+            case 's':
+                c.suit = SPADES;
+                break;
+            case 'd':
+                c.suit = DIAMONDS;
+                break;
+            case 'c':
+                c.suit = CLUBS;
+                break;
+            case 'h':
+                c.suit = HEARTS;
+                break;
+            default:
+                c.suit = -1;
+                break;
+        }
+    }
+    else if (input_len == 3)
+    {
+        if ((input[0] == '1') && (input[1] == '0'))
+            c.rank = TEN;
+        switch(input[2])
+        {
+            case 's':
+                c.suit = SPADES;
+                break;
+            case 'd':
+                c.suit = DIAMONDS;
+                break;
+            case 'c':
+                c.suit = CLUBS;
+                break;
+            case 'h':
+                c.suit = HEARTS;
+                break;
+            default:
+                c.suit = -1;
+                break;
+        }
+    }
+    return c;
+}
 
 /* msleep(): Sleep for the requested number of milliseconds. */
 int msleep(long msec)
@@ -47,6 +146,7 @@ void print_table(Deck* deck, Deck* pile, Hand* players, const int num_players)
     int i;
     for (i = num_players - 1; i >= 0; --i)
         cascade_hand(players[i].cards, players[i].num_cards);
+    printf("\n");
     cur_SAV();
     cur_HOME();
     cur_X(SCREEN_EDGE - (CARD_WIDTH * 2));
@@ -159,11 +259,51 @@ float crazy8(float money)
     // Game loop
     while (1)
     {
+        print_table(&deck, &pile, players, NUM_PLAYERS);
         for (i = 0; i < NUM_PLAYERS; ++i)
         {
+            print_table(&deck, &pile, players, NUM_PLAYERS);
             if (i == 0) // Player's Turn 
             {
-                continue;
+                // Check if player has any cards that can be played
+                int idx = check_for_match(players + i, peek_top(&pile));
+                if (idx < 0)
+                {
+                    cur_Y(-1);
+                    printf("You have no playable cards...Drawing\n");
+                    players[i].cards[players[i].num_cards++] = deal_card(&deck);
+                    if (deck.num_cards == 0)
+                        reshuffle(&deck, &pile);
+                    i--;
+                    msleep(1500);
+                    continue;
+                }
+
+                printf("\r                    \rSelect Card: ");
+                Card c = get_input_card();
+                if ((c.rank == -1) || (c.suit == -1))
+                {
+                    cur_Y(-2);
+                    printf("Invalid input\n");
+                    i--;
+                    continue;
+                }
+                idx = is_in_hand(players + i, c);
+                if (idx < 0)
+                {
+                    cur_Y(-2);
+                    printf("You don't have that card!\n");
+                    i--;
+                    continue;
+                }
+                Card top = peek_top(&pile);
+                if (   (c.suit == EIGHT) 
+                    || (c.rank == top.rank)
+                    || (c.suit == top.suit)) 
+                {
+                  pile.cards[pile.num_cards++] = c;
+                  remove_card(players + i, idx);
+                }
             }
             else // Computer's turn
             {
@@ -184,7 +324,6 @@ float crazy8(float money)
                     i--;
                 }
                 msleep(2000);
-                print_table(&deck, &pile, players, NUM_PLAYERS);
             }
         }
     }

@@ -60,4 +60,5 @@ void shuffle(Deck* deck);
 Card deal_card(Deck* deck);
 void remove_card(Hand* hand, int idx);
 Card peek_top(Deck* deck);
+int is_in_hand(Hand* hand , Card c);
 #endif
