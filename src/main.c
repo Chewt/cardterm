@@ -8,7 +8,7 @@
 
 int main(int argc, char** argv)
 {
-    float money;
+    float money = 0;
 
     // Allow user to specify starting money
     if (argc == 2)

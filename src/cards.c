@@ -178,7 +178,10 @@ void print_hand(Card* hand, int num_cards)
 void cascade_hand(Card* hand, int num_cards)
 {
     if (num_cards == 0)
+    {
+        cur_Y(CARD_HEIGHT);
         return;
+    }
     int i;
     for (i = 0; i < num_cards - 1; ++i)
     {
