@@ -331,23 +331,19 @@ float crazy8(float money)
                         reshuffle(&deck, &pile);
                     i--;
                 }
-                msleep(2000);
+                msleep(1000);
             }
             if (players[i].num_cards == 0)
             {
                 print_table(&deck, &pile, players, NUM_PLAYERS);
                 cur_Y(-1);
                 if (i == 0)
-                    printf("You win!");
+                    printf("You win!\n");
                 else
-                    printf("Player %d wins!", i);
-                printf("\nPress enter to leave:");
-                char input[256];
-                fgets(input, 256, stdin);
+                    printf("Player %d wins!\n", NUM_PLAYERS - i);
                 return money;
             }
         }
     }
-
     return money;
 }
