@@ -1,4 +1,5 @@
 #include "cards.h"
+#include "io.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -80,6 +81,17 @@ void swap_cards(Card* a, Card* b)
     *b = temp;
 }
 
+int is_in_hand(Hand* hand , Card c)
+{
+    int i;
+    for (i = 0; i < hand->num_cards; ++i)
+    {
+        if ((hand->cards[i].rank == c.rank) && (hand->cards[i].suit == c.suit))
+            return i;
+    }
+    return -1;
+}
+
 void print_card_text(Card card)
 {
     printf("%s of %s", rank_name(card.rank), suit_name(card.suit));
@@ -119,52 +131,73 @@ void print_card(Card card)
     {
         case SPADES:
             //suit = "SPD";
-            suit = " ♠ ";
+            suit = "♠";
             break;
         case HEARTS:
             //suit = "HRT";
-            suit = " \e[31;1m♥\e[0m ";
+            suit = STR_RED"♥"STR_NML;
             break;
         case CLUBS:
             //suit = "CLB";
-            suit = " ♣ ";
+            suit = "♣";
             break;
         case DIAMONDS:
             //suit = "DMD";
-            suit = " \e[31;1m♦\e[0m ";
+            suit = STR_RED"♦"STR_NML;
             break;
         default:
-            suit = " ? ";
+            suit = "?";
             break;
     }
-    printf("╔═════╗\e[B\e[7D"
-           "║%c%c   ║\e[B\e[7D"
-           "║ %s ║\e[B\e[7D"
-           "║   %c%c║\e[B\e[7D"
+    printf("╔═════╗\e[7D\e[B"
+           "║%c%c   ║\e[7D\e[B"
+           "║%s   %s║\e[7D\e[B"
+           "║   %c%c║\e[7D\e[B"
            "╚═════╝\e[4A",
            (card.rank == TEN) ? '1' : rank,
            (card.rank == TEN) ? '0' : ' ',
-           suit,
+           suit,suit,
            (card.rank == TEN) ? '1' : ' ',
            (card.rank == TEN) ? '0' : rank);
 }
 
 void print_hand(Card* hand, int num_cards)
 {
+    if (num_cards == 0)
+        return;
+    int i;
+    for (i = 0; i < num_cards; ++i)
+    {
+        print_card(hand[i]);
+    }
+    cur_Y(CARD_HEIGHT);
+    cur_CR();
+    fflush(stdout);
+}
+
+void cascade_hand(Card* hand, int num_cards)
+{
+    if (num_cards == 0)
+    {
+        cur_Y(CARD_HEIGHT);
+        return;
+    }
     int i;
     for (i = 0; i < num_cards - 1; ++i)
     {
         print_card(hand[i]);
+        cur_X(-4);
     }
     print_card(hand[i]);
-    printf("\e[5B\r");
+    cur_Y(CARD_HEIGHT);
+    cur_CR();
     fflush(stdout);
 }
 
 Deck new_deck()
 {
     Deck deck;
-    deck.numCards = 52;
+    deck.num_cards = 52;
     int i, j, k;
     k = 0;
     for (i = SPADES; i <= HEARTS; ++i)
@@ -185,10 +218,10 @@ void shuffle(Deck* deck)
     int i, j;
     for (i = 0; i < 4; ++i)
     {
-        for (j = 0; j < deck->numCards; ++j)
+        for (j = 0; j < deck->num_cards; ++j)
         {
-            int idx1 = rand() % deck->numCards;
-            int idx2 = rand() % deck->numCards;
+            int idx1 = rand() % deck->num_cards;
+            int idx2 = rand() % deck->num_cards;
             swap_cards(deck->cards + idx1, deck->cards + idx2);
         }
     }
@@ -196,7 +229,34 @@ void shuffle(Deck* deck)
 
 Card deal_card(Deck* deck)
 {
-    Card c = deck->cards[deck->numCards - 1];
-    deck->numCards--;
+    if (deck->num_cards == 0)
+        return (Card){-1,-1};
+    Card c = deck->cards[deck->num_cards - 1];
+    deck->num_cards--;
     return c;
 }
+
+/* Show the top card in a deck. This does NOT modify the deck.
+ * return: a copy of the top card
+ */
+Card peek_top(Deck* deck)
+{
+    return deck->cards[deck->num_cards - 1];
+}
+
+void remove_card(Hand* hand, int idx)
+{
+    if (hand->num_cards == 1)
+    {
+        hand->num_cards = 0;
+        return;
+    }
+    int i;
+    for (i = idx; i < hand->num_cards - 1; ++i)
+    {
+        swap_cards(hand->cards + i, hand->cards + i + 1);
+    }
+    hand->num_cards--;
+}
+
+
