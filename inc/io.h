@@ -19,5 +19,6 @@ void cur_RES();
 
 // User input
 void get_player_input(char* s);
+float get_player_bet(char* s);
 
 #endif

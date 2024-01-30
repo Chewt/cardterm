@@ -1,6 +1,7 @@
 #include "io.h"
 #include <ctype.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 void get_player_input(char* s)
 {
@@ -14,6 +15,15 @@ void get_player_input(char* s)
         i++;
     }
     s[i] = 0;
+}
+
+float get_player_bet(char* s)
+{
+    float bet = 0.f;
+    if (s[0] == 0)
+        fgets(s, 255, stdin);
+    bet = strtof(s, NULL);
+    return bet;
 }
 
 void cur_Y(int y)

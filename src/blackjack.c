@@ -5,15 +5,6 @@
 #include <string.h>
 #include <unistd.h>
 
-float get_player_bet(char* s)
-{
-    float bet = 0.f;
-    if (s[0] == 0)
-        fgets(s, 255, stdin);
-    bet = strtof(s, NULL);
-    return bet;
-}
-
 int score_hand(Card* hand, int hand_size)
 {
     int score = 0;

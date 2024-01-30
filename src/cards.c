@@ -236,7 +236,6 @@ Card deal_card(Deck* deck)
     return c;
 }
 
-<<<<<<< HEAD
 /* Show the top card in a deck. This does NOT modify the deck.
  * return: a copy of the top card
  */

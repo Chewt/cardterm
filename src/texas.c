@@ -1,5 +1,6 @@
 #include "cards.h"
 #include "texas.h"
+#include "io.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
