@@ -5,7 +5,7 @@
 #include <string.h>
 #include <unistd.h>
 
-int score_hand(Card* hand, int hand_size)
+int blackjack_score_hand(Card* hand, int hand_size)
 {
     int score = 0;
     int i;
@@ -77,8 +77,8 @@ float blackjack(float money)
     //hand[0][0] = (Card){SPADES, ACE};
     //hand[0][1] = (Card){CLUBS, ACE};
 
-    int player_score = score_hand(hand[0], hand_size[0]);
-    int dealer_score = score_hand(dealer_hand, d_hand_size);
+    int player_score = blackjack_score_hand(hand[0], hand_size[0]);
+    int dealer_score = blackjack_score_hand(dealer_hand, d_hand_size);
 
     // Check for natural scores of 21
     if (player_score == 21 && dealer_score == 21)
@@ -141,7 +141,7 @@ float blackjack(float money)
             printf(" hand is:\n");
             print_hand(hand[i], hand_size[i]);
 
-            if (score_hand(hand[i], hand_size[i]) > 21)
+            if (blackjack_score_hand(hand[i], hand_size[i]) > 21)
             {
                 printf("\nBust.\n");
                 bust++;
@@ -177,15 +177,15 @@ float blackjack(float money)
         sleep(2);
         printf("\e[5A"); // Draw over old hand
         dealer_hand[d_hand_size++] = deal_card(&deck);
-        dealer_score = score_hand(dealer_hand, d_hand_size);
+        dealer_score = blackjack_score_hand(dealer_hand, d_hand_size);
         print_hand(dealer_hand, d_hand_size);
     } 
-    dealer_score = score_hand(dealer_hand, d_hand_size);
+    dealer_score = blackjack_score_hand(dealer_hand, d_hand_size);
 
     // Determine winner
     for (i = 0; i < num_hands; ++i)
     {
-        player_score = score_hand(hand[i], hand_size[i]);
+        player_score = blackjack_score_hand(hand[i], hand_size[i]);
 
         printf("Your");
         if (num_hands == 2)
